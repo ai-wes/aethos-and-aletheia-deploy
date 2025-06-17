@@ -1,0 +1,180 @@
+/* Filename: CompassSearchSpinner.css */
+
+.compass-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.compass-container {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Outer faint circle */
+.compass-circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(35, 217, 217, 0.3);
+  border-radius: 50%;
+}
+
+/* Cardinal points */
+.compass-point {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #23d9d9;
+  box-shadow: 0 0 6px #23d9d9;
+}
+
+.compass-point.north {
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-point.east {
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.compass-point.south {
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compass-point.west {
+  left: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Center dot */
+.compass-center {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #fff;
+}
+
+/* Needles */
+.compass-needle {
+  position: absolute;
+  width: 2px;
+  height: 22px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center bottom;
+  border-radius: 1px;
+  transform: translate(-50%, -100%);
+}
+
+.gold-needle {
+  background: linear-gradient(
+    to top,
+    transparent 0%,
+    #ffc34d 30%,
+    #ffc34d 100%
+  );
+  box-shadow: 0 0 4px #ffc34d;
+  animation: compass-search-gold 2.5s infinite linear;
+}
+
+.cyan-needle {
+  background: linear-gradient(
+    to top,
+    transparent 0%,
+    #23d9d9 30%,
+    #23d9d9 100%
+  );
+  box-shadow: 0 0 4px #23d9d9;
+  animation: compass-search-cyan 3.2s infinite ease-in-out;
+}
+
+/* Gold needle - steady clockwise rotation */
+@keyframes compass-search-gold {
+  from {
+    transform: translate(-50%, -100%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -100%) rotate(360deg);
+  }
+}
+
+/* Cyan needle - counter-clockwise with thinking stutters */
+@keyframes compass-search-cyan {
+  0% {
+    transform: translate(-50%, -100%) rotate(0deg);
+  }
+  15% {
+    transform: translate(-50%, -100%) rotate(-60deg);
+  }
+  18% {
+    transform: translate(-50%, -100%) rotate(-55deg);
+  } /* Small stutter */
+  20% {
+    transform: translate(-50%, -100%) rotate(-65deg);
+  }
+  35% {
+    transform: translate(-50%, -100%) rotate(-120deg);
+  }
+  38% {
+    transform: translate(-50%, -100%) rotate(-115deg);
+  } /* Another stutter */
+  40% {
+    transform: translate(-50%, -100%) rotate(-125deg);
+  }
+  55% {
+    transform: translate(-50%, -100%) rotate(-180deg);
+  }
+  70% {
+    transform: translate(-50%, -100%) rotate(-240deg);
+  }
+  73% {
+    transform: translate(-50%, -100%) rotate(-235deg);
+  } /* Stutter */
+  75% {
+    transform: translate(-50%, -100%) rotate(-245deg);
+  }
+  85% {
+    transform: translate(-50%, -100%) rotate(-300deg);
+  }
+  100% {
+    transform: translate(-50%, -100%) rotate(-360deg);
+  }
+}
+
+/* UPDATED: Animate text-shadow for a glow effect */
+@keyframes pulse-text {
+  0%,
+  100% {
+    opacity: 0.5;
+    text-shadow: 0 0 4px rgba(35, 217, 217, 0.2);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(35, 217, 217, 0.9);
+  }
+}
+
+.compass-text {
+  color: #8f9aa6;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 500;
+  animation: pulse-text 3.5s ease-in-out infinite;
+}

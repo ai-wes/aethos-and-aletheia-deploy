@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fallback Response</title>
+    <style>
+        body {
+            background: #0b0e11;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #23d9d9;
+            border-radius: 8px;
+        }
+        pre {
+            background: rgba(17, 21, 26, 0.8);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Testing Backend Fallback Response Format</h1>
+    
+    <div class="test-section">
+        <h2>Expected Backend Response (Fallback)</h2>
+        <pre id="backendResponse"></pre>
+    </div>
+    
+    <div class="test-section">
+        <h2>Frontend Processing Test</h2>
+        <div id="frontendTest"></div>
+    </div>
+
+    <script>
+        // Simulate the exact backend response when fallback is used
+        const simulatedBackendResponse = {
+            query: "How should we ensure that advanced AI systems remain aligned with human values?",
+            response: "This is the full response text that would normally contain the detailed analysis...",
+            structured_response: {
+                tldr: "This is a truncated summary of the response...",
+                key_points: [], // Empty array in fallback
+                perspectives: [], // Empty array in fallback
+                full_analysis: "This is the complete analysis text from the LLM that failed to parse as JSON...",
+                citation_mapping: []
+            },
+            is_structured: false,
+            sources: [],
+            trace_id: "test123",
+            cache_id: null,
+            is_cached: false,
+            philosophical_themes: ["ethics", "ai_alignment"],
+            complexity_score: 0.7,
+            timestamp: new Date().toISOString()
+        };
+
+        // Display the backend response
+        document.getElementById('backendResponse').textContent = JSON.stringify(simulatedBackendResponse, null, 2);
+
+        // Test frontend processing
+        function testFrontendProcessing() {
+            const result = simulatedBackendResponse;
+            const structured_response = result?.structured_response;
+            
+            let output = [];
+            
+            // Test the condition from WisdomResult.jsx line 18
+            if (!structured_response || typeof structured_response !== "object") {
+                output.push("❌ FAIL: structured_response check failed");
+                output.push(`structured_response: ${structured_response}`);
+                output.push(`type: ${typeof structured_response}`);
+            } else {
+                output.push("✅ PASS: structured_response exists and is object");
+            }
+            
+            // Test key_points rendering
+            if (structured_response && structured_response.key_points) {
+                if (structured_response.key_points.length === 0) {
+                    output.push("⚠️  WARNING: key_points is empty array - no insights will render");
+                } else {
+                    output.push(`✅ PASS: key_points has ${structured_response.key_points.length} items`);
+                }
+            }
+            
+            // Test perspectives rendering
+            if (structured_response && structured_response.perspectives) {
+                if (structured_response.perspectives.length === 0) {
+                    output.push("⚠️  WARNING: perspectives is empty array - no perspectives will render");
+                } else {
+                    output.push(`✅ PASS: perspectives has ${structured_response.perspectives.length} items`);
+                }
+            }
+            
+            // Test what would actually be displayed
+            if (structured_response && structured_response.full_analysis) {
+                output.push("💡 SOLUTION: full_analysis contains the actual content:");
+                output.push(`"${structured_response.full_analysis.substring(0, 100)}..."`);
+            }
+            
+            return output.join('\n');
+        }
+
+        document.getElementById('frontendTest').innerHTML = '<pre>' + testFrontendProcessing() + '</pre>';
+    </script>
+</body>
+</html>

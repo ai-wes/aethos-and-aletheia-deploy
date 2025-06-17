@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test WisdomResult Fallback</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            background: #0b0e11;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Simulate the fallback response from backend
+        const mockFallbackResult = {
+            query: "How should we ensure that advanced AI systems remain aligned with human values?",
+            response: "This is the response text...",
+            structured_response: {
+                tldr: "Advanced AI alignment requires careful consideration of human values, oversight mechanisms, and gradual deployment strategies to ensure beneficial outcomes.",
+                key_points: [], // Empty - this is the problem case
+                perspectives: [], // Empty - this is the problem case  
+                full_analysis: `Advanced AI alignment is one of the most critical challenges facing humanity as we develop increasingly sophisticated artificial intelligence systems. The question of how to ensure AI systems remain aligned with human values touches on fundamental issues in ethics, technology governance, and existential risk management.
+
+From a technical perspective, AI alignment involves several key challenges:
+
+1. Value Learning: How do we encode human values into AI systems when our values are complex, contextual, and sometimes contradictory?
+
+2. Specification Problem: How do we specify objectives for AI systems that capture what we actually want, rather than what we think we can measure?
+
+3. Robustness: How do we ensure AI systems behave safely even in novel situations they weren't trained for?
+
+4. Scalable Oversight: How do we maintain meaningful human control over AI systems that may eventually exceed human capabilities in many domains?
+
+The philosophical dimensions are equally complex. Different ethical frameworks offer different approaches to these challenges, from utilitarian calculations of overall well-being to deontological emphasis on rights and duties, to virtue ethics focus on character and flourishing.
+
+This is a critical area where interdisciplinary collaboration between technologists, ethicists, policymakers, and civil society is essential.`,
+                citation_mapping: []
+            },
+            is_structured: false,
+            sources: [],
+            trace_id: "test123",
+            is_cached: false
+        };
+
+        // Simplified WisdomResult component for testing
+        const WisdomResult = ({ result }) => {
+            const structured_response = result?.structured_response;
+
+            if (!structured_response || typeof structured_response !== "object") {
+                return (
+                    <div style={{color: 'red', padding: '20px', border: '1px solid red'}}>
+                        <p>Failed to parse a valid structured response.</p>
+                        <pre>{JSON.stringify(result, null, 2)}</pre>
+                    </div>
+                );
+            }
+
+            const hasKeyPoints = structured_response.key_points && structured_response.key_points.length > 0;
+            const hasPerspectives = structured_response.perspectives && structured_response.perspectives.length > 0;
+            const hasFullAnalysis = structured_response.full_analysis;
+
+            return (
+                <div style={{padding: '20px', border: '1px solid #23d9d9', borderRadius: '8px'}}>
+                    <h3>Wisdom Network Analysis</h3>
+                    
+                    <div style={{marginBottom: '20px'}}>
+                        <strong>Debug Info:</strong>
+                        <ul>
+                            <li>Has key points: {hasKeyPoints ? 'Yes' : 'No'} ({structured_response.key_points?.length || 0} items)</li>
+                            <li>Has perspectives: {hasPerspectives ? 'Yes' : 'No'} ({structured_response.perspectives?.length || 0} items)</li>
+                            <li>Has full analysis: {hasFullAnalysis ? 'Yes' : 'No'}</li>
+                            <li>Is structured: {result.is_structured ? 'Yes' : 'No'}</li>
+                        </ul>
+                    </div>
+
+                    {hasKeyPoints && (
+                        <div style={{marginBottom: '20px', padding: '15px', backgroundColor: 'rgba(26, 31, 37, 0.5)', borderRadius: '6px'}}>
+                            <h4>Key Insights</h4>
+                            {structured_response.key_points.map((insight, idx) => (
+                                <div key={idx} style={{margin: '10px 0'}}>{insight}</div>
+                            ))}
+                        </div>
+                    )}
+
+                    {hasPerspectives && (
+                        <div style={{marginBottom: '20px', padding: '15px', backgroundColor: 'rgba(26, 31, 37, 0.5)', borderRadius: '6px'}}>
+                            <h4>Philosophical Perspectives</h4>
+                            {structured_response.perspectives.map((p, idx) => (
+                                <div key={idx} style={{margin: '10px 0'}}>
+                                    <strong>{p.framework}</strong>: {p.core_thesis}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* This is our fix - show full analysis when structured data is empty */}
+                    {!hasKeyPoints && !hasPerspectives && hasFullAnalysis && (
+                        <div style={{marginBottom: '20px', padding: '20px', backgroundColor: 'rgba(26, 31, 37, 0.5)', borderRadius: '8px', border: '1px solid rgba(56, 71, 87, 0.5)'}}>
+                            <h4>Analysis</h4>
+                            <p style={{margin: 0, fontSize: '0.9rem', color: '#d1d5db', lineHeight: 1.6, whiteSpace: 'pre-wrap'}}>
+                                {structured_response.full_analysis}
+                            </p>
+                        </div>
+                    )}
+
+                    {!hasKeyPoints && !hasPerspectives && !hasFullAnalysis && (
+                        <div style={{padding: '20px', backgroundColor: 'rgba(255, 71, 87, 0.1)', border: '1px solid rgba(255, 71, 87, 0.3)', borderRadius: '6px', color: '#ff4757'}}>
+                            <p>No content available to display. This indicates a problem with the backend response.</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const App = () => {
+            return (
+                <div className="test-container">
+                    <h1>Testing WisdomResult Fallback Handling</h1>
+                    <p>This simulates what happens when the backend falls back to unstructured response:</p>
+                    <WisdomResult result={mockFallbackResult} />
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

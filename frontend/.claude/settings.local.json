@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__desktop-commander__read_file",
+      "mcp__desktop-commander__search_code",
+      "mcp__taskmanager__request_planning",
+      "mcp__taskmanager__get_next_task",
+      "mcp__taskmanager__mark_task_done",
+      "Bash(grep:*)",
+      "mcp__taskmanager__approve_task_completion",
+      "mcp__taskmanager__add_tasks_to_request",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm start)",
+      "Bash(sed:*)",
+      "Bash(git checkout:*)",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__search_files",
+      "mcp__filesystem__read_file",
+      "mcp__filesystem__create_directory",
+      "Bash(ls:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(rm:*)",
+      "mcp__desktop-commander__edit_block",
+      "mcp__webresearch__visit_page",
+      "Bash(python:*)",
+      "Bash(npx playwright:*)",
+      "mcp__playwright-mcp-server__playwright_navigate",
+      "Bash(curl:*)",
+      "Bash(PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium)",
+      "Bash(/Users/wes/Desktop/aethos-and-aletheia/venv/bin/python test_evaluator.py)",
+      "Bash(/Users/wes/Desktop/aethos-and-aletheia/venv/bin/python ../test_constitution_update.py)",
+      "Bash(awk:*)"
+    ],
+    "deny": []
+  }
+}

@@ -1,0 +1,24 @@
+UNUSED FILES - AETHOS ALETHEIA UI
+=====================================
+
+The following files are not referenced in the application's import dependency tree and appear to be unused:
+
+UNUSED COMPONENTS:
+- /src/components/AnalysisDemo.jsx
+- /src/components/AethosText.js
+- /src/components/CSSHarmonicScene.css
+- /src/components/CSSHarmonicScene.js
+- /src/components/CombinedScene.js
+- /src/components/Compass.jsx
+- /src/components/DualEnergyScene.jsx
+- /src/components/HarmonicPatternSceneold.js
+- /src/components/HeroSection.jsx
+- /src/components/LandingPage.js
+- /src/components/ParticleFieldold.jsx
+- /src/components/QuantumFieldScene.js
+- /src/components/Sidebar.jsx
+- /src/components/ThreeText.js
+- /src/components/WisdomQuery.jsx
+
+
+

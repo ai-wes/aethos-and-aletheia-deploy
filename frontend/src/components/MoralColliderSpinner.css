@@ -1,0 +1,115 @@
+/* Filename: MoralColliderSpinner.css */
+
+.collider-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.collider-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.collider-core {
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  box-shadow: 0 0 15px #fff, 0 0 25px #fff;
+  animation: core-pulse-and-react 3s infinite ease-in-out;
+}
+
+@keyframes core-pulse-and-react {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.3); } /* Aethos impact */
+  50% { transform: scale(1); }
+  75% { transform: scale(1.3); } /* Aletheia impact */
+}
+
+.orbit-path {
+  position: absolute;
+  width: 100%;
+  height: 50%; /* This makes the orbit elliptical */
+  animation: orbit 3s infinite linear;
+}
+
+.aethos-path {
+  animation-name: orbit-aethos;
+}
+.aletheia-path {
+  animation-name: orbit-aletheia;
+}
+
+@keyframes orbit-aethos {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbit-aletheia {
+  from { transform: rotate(180deg); }
+  to { transform: rotate(540deg); }
+}
+
+.collider-particle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.aethos-particle {
+  background-color: #ffc34d; /* Gold */
+  box-shadow: 0 0 10px #ffc34d, 0 0 15px #ffc34d;
+}
+
+.aletheia-particle {
+  background-color: #23d9d9; /* Cyan */
+  box-shadow: 0 0 10px #23d9d9, 0 0 15px #23d9d9;
+}
+
+/* The Shockwave Effect */
+.shockwave {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0);
+  animation: shockwave-burst 3s infinite ease-out;
+}
+
+.aethos-shockwave {
+  border: 2px solid #ffc34d;
+  animation-delay: 0s;
+}
+
+.aletheia-shockwave {
+  border: 2px solid #23d9d9;
+  animation-delay: 1.5s; /* Half a cycle later */
+}
+
+@keyframes shockwave-burst {
+  0% { transform: scale(0.5); opacity: 0; }
+  25% { transform: scale(1); opacity: 0.7; } /* Corresponds to core impact */
+  40% { transform: scale(3.5); opacity: 0; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+
+.collider-text {
+  color: #8f9aa6;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  opacity: 0.8;
+}

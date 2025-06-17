@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Principle Stress Test Analysis",
+  "description": "Schema for red-team analysis of AI principles to identify vulnerabilities and failure modes",
+  "type": "object",
+  "required": [
+    "critical_vulnerabilities",
+    "risk_score",
+    "loopholes",
+    "mitigations",
+    "historical_analogues",
+    "rationale",
+    "revised_principle",
+    "philosophical_objections",
+    "failure_scenarios",
+    "detailed_risk_analysis"
+  ],
+  "properties": {
+    "critical_vulnerabilities": {
+      "type": "array",
+      "description": "Quick, concise list of 2-3 of the most dangerous vulnerabilities",
+      "minItems": 2,
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "minLength": 10,
+        "maxLength": 200
+      }
+    },
+    "risk_score": {
+      "type": "integer",
+      "description": "Risk assessment score from 0 (minimal risk) to 10 (catastrophic risk)",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "loopholes": {
+      "type": "array",
+      "description": "Specific loopholes with examples that could be exploited",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["description", "example", "severity"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the loophole",
+            "minLength": 20
+          },
+          "example": {
+            "type": "string",
+            "description": "Concrete example of how this loophole could be exploited",
+            "minLength": 30
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "description": "Severity level of this loophole"
+          }
+        }
+      }
+    },
+    "mitigations": {
+      "type": "array",
+      "description": "Philosophical mitigation strategies to address the vulnerabilities",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["strategy", "philosophical_basis", "implementation"],
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "description": "The mitigation strategy",
+            "minLength": 20
+          },
+          "philosophical_basis": {
+            "type": "string",
+            "description": "Philosophical framework or tradition supporting this mitigation",
+            "minLength": 10
+          },
+          "implementation": {
+            "type": "string",
+            "description": "How this mitigation could be practically implemented",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "historical_analogues": {
+      "type": "array",
+      "description": "Historical or mythological failure cases from context",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["case", "parallel", "lesson"],
+        "properties": {
+          "case": {
+            "type": "string",
+            "description": "Name or description of the historical/mythological case",
+            "minLength": 10
+          },
+          "parallel": {
+            "type": "string",
+            "description": "How this case parallels the current principle's risks",
+            "minLength": 30
+          },
+          "lesson": {
+            "type": "string",
+            "description": "Key lesson or warning from this case",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Brief explanation of why this principle is dangerous and overall risk assessment",
+      "minLength": 100,
+      "maxLength": 1000
+    },
+    "revised_principle": {
+      "type": "string",
+      "description": "Suggested revised version of the principle to mitigate risks",
+      "minLength": 50,
+      "maxLength": 500
+    },
+    "philosophical_objections": {
+      "type": "array",
+      "description": "Philosophical objections with severity scores",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": [
+          "objection",
+          "philosophical_framework",
+          "severity_score",
+          "reasoning"
+        ],
+        "properties": {
+          "objection": {
+            "type": "string",
+            "description": "The philosophical objection to the principle",
+            "minLength": 30
+          },
+          "philosophical_framework": {
+            "type": "string",
+            "description": "The philosophical tradition or framework raising this objection",
+            "examples": [
+              "Utilitarian",
+              "Deontological",
+              "Virtue Ethics",
+              "Buddhist",
+              "Stoic",
+              "Confucian"
+            ]
+          },
+          "severity_score": {
+            "type": "number",
+            "description": "Severity score from 0.0 to 1.0",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Detailed reasoning behind this objection",
+            "minLength": 50
+          }
+        }
+      }
+    },
+    "failure_scenarios": {
+      "type": "array",
+      "description": "At least 2 concrete failure scenarios",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["scenario", "trigger", "consequences", "probability"],
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "description": "Description of the failure scenario",
+            "minLength": 50
+          },
+          "trigger": {
+            "type": "string",
+            "description": "What would trigger this failure mode",
+            "minLength": 20
+          },
+          "consequences": {
+            "type": "string",
+            "description": "Potential consequences of this failure",
+            "minLength": 30
+          },
+          "probability": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Estimated probability of this scenario occurring"
+          }
+        }
+      }
+    },
+    "detailed_risk_analysis": {
+      "type": "string",
+      "description": "Detailed risk analysis with HTML formatting and proper citation spans",
+      "minLength": 200,
+      "pattern": ".*<span.*citation.*>.*</span>.*"
+    }
+  },
+  "additionalProperties": false
+}

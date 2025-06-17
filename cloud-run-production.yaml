@@ -1,0 +1,97 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: aethos-aletheia-backend
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/execution-environment: gen2
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cpu-throttling: "false"
+        run.googleapis.com/memory: "4Gi"
+        run.googleapis.com/cpu: "2000m"
+        run.googleapis.com/max-scale: "10"
+        run.googleapis.com/min-scale: "1"  # Keep 1 instance warm for BERT models
+        autoscaling.knative.dev/maxScale: "10"
+        autoscaling.knative.dev/minScale: "1"
+        run.googleapis.com/timeout: "300s"
+    spec:
+      serviceAccountName: aethos-backend-sa@PROJECT_ID.iam.gserviceaccount.com
+      containers:
+      - image: gcr.io/PROJECT_ID/aethos-aletheia-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: ENVIRONMENT
+          value: "production"
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-credentials
+              key: uri
+        - name: DATABASE_NAME
+          value: "aethos_aletheia"
+        - name: GOOGLE_CLOUD_PROJECT
+          value: "PROJECT_ID"
+        - name: GOOGLE_CLOUD_LOCATION
+          value: "us-central1"
+        - name: GCS_BUCKET_NAME
+          value: "aethos-datasets"
+        - name: COLLECTION_NAME
+          value: "philosophical_texts"
+        - name: REASONING_TRACES_COLLECTION_NAME
+          value: "reasoning_traces"
+        - name: SCENARIOS_COLLECTION
+          value: "ethical_scenarios"
+        - name: AGENTS_COLLECTION
+          value: "ai_agents"
+        - name: LEARNING_HISTORY_COLLECTION
+          value: "learning_history"
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: gemini-credentials
+              key: api_key
+        # ML Model caching
+        - name: HF_HOME
+          value: "/app/.cache/huggingface"
+        - name: TRANSFORMERS_CACHE
+          value: "/app/.cache/huggingface"
+        # Performance tuning
+        - name: GUNICORN_WORKERS
+          value: "1"
+        - name: GUNICORN_THREADS
+          value: "8"
+        resources:
+          limits:
+            cpu: "2000m"
+            memory: "4Gi"
+          requests:
+            cpu: "1000m"
+            memory: "2Gi"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 60  # Allow time for model loading
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30  # Allow up to 5 minutes for startup

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Agent Creation Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #222;
+        }
+        .success {
+            color: #4ade80;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .result {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Agent Creation Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Create New Agent</h2>
+        <button onclick="createAgent()">Create Test Agent</button>
+        <div id="create-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: List All Agents</h2>
+        <button onclick="listAgents()">List Agents</button>
+        <div id="list-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Get Agent Details</h2>
+        <input type="text" id="agent-id" placeholder="Enter agent ID" style="padding: 5px; width: 300px; background: #333; color: #fff; border: 1px solid #555;">
+        <button onclick="getAgent()">Get Agent</button>
+        <div id="agent-result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080';
+        let lastCreatedAgent = null;
+        
+        async function createAgent() {
+            const resultDiv = document.getElementById('create-result');
+            try {
+                const agentName = `Test Agent ${Date.now()}`;
+                const response = await fetch(`${API_BASE}/api/aletheia/create_agent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        initial_constitution: [
+                            "Always prioritize human welfare and dignity",
+                            "Consider the consequences of actions on all stakeholders",
+                            "Respect individual rights and autonomy",
+                            "Act with transparency and honesty",
+                            "Minimize harm while maximizing benefit"
+                        ],
+                        name: agentName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    lastCreatedAgent = data;
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Agent Created Successfully!</div>
+                        <div class="result">
+                            <strong>Agent ID:</strong> ${data.agent_id}<br>
+                            <strong>Name:</strong> ${data.name}<br>
+                            <strong>Version:</strong> ${data.version}<br>
+                            <strong>Constitution:</strong> ${data.constitution.length} principles
+                        </div>
+                    `;
+                    // Auto-populate the agent ID field
+                    document.getElementById('agent-id').value = data.agent_id;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ Network Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function listAgents() {
+            const resultDiv = document.getElementById('list-result');
+            try {
+                const response = await fetch(`${API_BASE}/api/aletheia/agents`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Found ${data.length} agents</div>
+                        <div class="result">
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ Network Error: ${e.message}</div>`;
+            }
+        }
+        
+        async function getAgent() {
+            const resultDiv = document.getElementById('agent-result');
+            const agentId = document.getElementById('agent-id').value;
+            
+            if (!agentId) {
+                resultDiv.innerHTML = '<div class="error">Please enter an agent ID</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/aletheia/agents/${agentId}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Agent Found!</div>
+                        <div class="result">
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${data.error}</div>`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `<div class="error">❌ Network Error: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
