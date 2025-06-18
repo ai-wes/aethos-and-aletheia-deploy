@@ -1,12 +1,19 @@
 # Multi-stage build for optimal production deployment
 FROM python:3.12-slim as builder
 
+# Set cache directory for Hugging Face models
+ENV HF_HOME=/app/.cache/huggingface
+ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
+
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     git \
     && rm -rf /var/lib/apt/lists/*
+
+# Create cache directory
+RUN mkdir -p /app/.cache/huggingface
 
 # Create virtual environment and install dependencies
 COPY requirements.txt .
@@ -26,6 +33,7 @@ try:
     print(f'Successfully downloaded {model_name}')
 except Exception as e:
     print(f'Error downloading BERT model: {e}')
+    exit(1)
 "
 
 # Production stage
@@ -50,6 +58,9 @@ WORKDIR /app
 # Copy Python packages from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy cached models from builder
+COPY --from=builder /app/.cache /app/.cache
 
 # Copy application code
 COPY . .

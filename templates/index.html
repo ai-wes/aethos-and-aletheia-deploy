@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aethos & Aletheia - API Server</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .api-info {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            margin: 20px 0;
+        }
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 Aethos &amp; Aletheia</h1>
+        <div class="status">
+            <h2>API Server Running</h2>
+            <p>The backend API is operational and ready to serve requests.</p>
+        </div>
+        
+        <div class="api-info">
+            <h3>Available Endpoints:</h3>
+            <ul>
+                <li><code>GET /api/health</code> - Health check</li>
+                <li><code>POST /api/wisdom_oracle</code> - Wisdom Oracle queries</li>
+                <li><code>POST /api/scenarios</code> - Scenario management</li>
+                <li><code>POST /api/stress_test</code> - Stress testing</li>
+                <li><code>POST /api/mas_evaluation</code> - MAS evaluation</li>
+            </ul>
+        </div>
+        
+        <p>For the full frontend experience, visit the React application.</p>
+    </div>
+</body>
+</html>
