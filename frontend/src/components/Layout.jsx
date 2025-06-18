@@ -1675,7 +1675,8 @@ const styles = {
     textAlign: "center",
     minHeight: "140px",
     justifyContent: "center",
-    minWidth: "150px",
+    width: "175px",
+
     boxSizing: "border-box",
     fontFamily: "inherit",
     fontSize: "inherit",
