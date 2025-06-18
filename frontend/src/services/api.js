@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "https://aethos-and-aletheia.onrender.com";
 
 // Helper function for fetch requests
 const apiRequest = async (endpoint, options = {}) => {
