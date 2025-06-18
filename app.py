@@ -163,21 +163,24 @@ if db is not None:
 
 class SophiaGuardRAG:
     def __init__(self):
-        self.local_tokenizer = None
-        self.local_embedding_model = None
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        logger.info(f"Using device: {self.device} for local embeddings.")
+        self.bert_api_url = os.getenv('BERT_API_URL', 'https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2')
+        self.hf_token = os.getenv('HUGGINGFACE_API_TOKEN', '')
+        logger.info(f"Using external BERT API at: {self.bert_api_url}")
         self.initialize_models()
 
     def initialize_models(self):
-        """Initialize local BERT model for embeddings and Gemini API client for generation."""
+        """Initialize Gemini API client and check BERT API availability."""
         try:
-            logger.info("Initializing local BERT model for embeddings (bert-base-uncased)...")
-            self.local_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
-            self.local_embedding_model = AutoModel.from_pretrained("bert-base-uncased")
-            self.local_embedding_model.to(self.device)
-            self.local_embedding_model.eval()
-            logger.info("Local BERT model (bert-base-uncased) initialized successfully.")
+            # Check BERT API availability
+            logger.info(f"Checking BERT API at {self.bert_api_url}...")
+            try:
+                response = requests.get(f"{self.bert_api_url}/health", timeout=10)
+                if response.status_code == 200:
+                    logger.info("External BERT API is available.")
+                else:
+                    logger.warning(f"BERT API returned status {response.status_code}")
+            except Exception as e:
+                logger.warning(f"BERT API check failed: {e}")
 
             gemini_api_key = Config.GEMINI_API_KEY
             if not gemini_api_key:
@@ -186,40 +189,55 @@ class SophiaGuardRAG:
             else:
                 self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
                 logger.info("Gemini API client initialized successfully.")
-            logger.info("AI models initialization attempt complete.")
+            logger.info("AI models initialization complete.")
         except Exception as e:
             logger.error(f"Failed to initialize AI models: {e}")
-            self.local_tokenizer = None
-            self.local_embedding_model = None
             self.client = None
 
     def generate_embeddings(self, text: str) -> List[float]:
-        """Generate embeddings for input text using local BERT model."""
+        """Generate embeddings using Hugging Face Inference API."""
         if not text or not text.strip():
-            logger.warning("generate_embeddings called with empty or whitespace-only text. Returning empty list.")
+            logger.warning("generate_embeddings called with empty text. Returning empty list.")
             return []
         try:
-            if not self.local_tokenizer or not self.local_embedding_model:
-                raise Exception("Local BERT model or tokenizer not initialized")
-
-            inputs = self.local_tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-
-            with torch.no_grad():
-                outputs = self.local_embedding_model(**inputs)
+            headers = {"Content-Type": "application/json"}
+            if self.hf_token:
+                headers["Authorization"] = f"Bearer {self.hf_token}"
             
-            attention_mask = inputs['attention_mask']
-            token_embeddings = outputs.last_hidden_state
-            mask = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-            masked_embeddings = token_embeddings * mask
-            summed_embeddings = torch.sum(masked_embeddings, 1)
-            actual_token_counts = torch.clamp(mask.sum(1), min=1e-9)
-            mean_pooled_embeddings = summed_embeddings / actual_token_counts
+            response = requests.post(
+                self.bert_api_url,
+                json={"inputs": text},
+                timeout=30,
+                headers=headers
+            )
             
-            embedding_list = mean_pooled_embeddings[0].cpu().numpy().tolist()
-            return embedding_list
+            if response.status_code == 200:
+                embedding = response.json()
+                if isinstance(embedding, list) and len(embedding) > 0:
+                    # Hugging Face returns the embedding directly as a list
+                    if isinstance(embedding[0], list):
+                        embedding = embedding[0]  # Take first embedding if batched
+                    
+                    # Pad or truncate to 768 dimensions to match BERT expectations
+                    if len(embedding) != 768:
+                        if len(embedding) < 768:
+                            embedding.extend([0.0] * (768 - len(embedding)))
+                        else:
+                            embedding = embedding[:768]
+                    
+                    logger.info(f"Successfully generated embedding via HF API (dim: {len(embedding)})")
+                    return embedding
+                else:
+                    logger.error(f"Invalid embedding from HF API: {type(embedding)}")
+                    return []
+            else:
+                logger.error(f"HF API request failed: {response.status_code} - {response.text}")
+                return []
+        except requests.exceptions.RequestException as e:
+            logger.error(f"HF API request failed: {e}")
+            return []
         except Exception as e:
-            logger.error(f"Failed to generate local BERT embeddings: {e}")
+            logger.error(f"Unexpected error generating embeddings: {e}")
             return []
 
     def vector_search(self, query_embedding: List[float], limit: int = 5) -> List[Dict]:
