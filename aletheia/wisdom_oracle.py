@@ -19,28 +19,52 @@ class WisdomOracle:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = None
         self.embedding_model = None
-        self._initialize_local_embedding_model()
+        self.model_loaded = False
         logger.info(f"WisdomOracle initialized. Using device: {self.device}")
 
     def _initialize_local_embedding_model(self):
         try:
             logger.info(f"Initializing local embedding model: {Config.EMBEDDING_MODEL_NAME}")
+            # Force CPU usage to reduce memory pressure
+            self.device = torch.device("cpu")
             self.tokenizer = AutoTokenizer.from_pretrained(Config.EMBEDDING_MODEL_NAME)
-            self.embedding_model = AutoModel.from_pretrained(Config.EMBEDDING_MODEL_NAME).to(self.device)
+            # Load model with memory optimizations
+            self.embedding_model = AutoModel.from_pretrained(
+                Config.EMBEDDING_MODEL_NAME,
+                torch_dtype=torch.float16,  # Use half precision
+                low_cpu_mem_usage=True,
+                device_map="cpu"
+            )
             self.embedding_model.eval()
-            logger.info("Local embedding model initialized successfully.")
+            self.model_loaded = True
+            logger.info("Local embedding model initialized successfully with memory optimizations.")
         except Exception as e:
             logger.error(f"Failed to initialize local embedding model: {e}", exc_info=True)
-            raise
+            self.model_loaded = False
 
     def generate_embedding(self, text: str) -> List[float]:
         """Generates a vector embedding for a given text using a local model."""
         if not text or not text.strip():
             return []
+        
+        # Lazy loading - only initialize model when needed
+        if not self.model_loaded:
+            try:
+                self._initialize_local_embedding_model()
+            except Exception as e:
+                logger.error(f"Failed to initialize local embedding model on demand: {e}")
+                return []
+        
+        if not self.model_loaded:
+            logger.error("Local BERT model or tokenizer not initialized")
+            return []
+            
         try:
-            inputs = self.tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512).to(self.device)
+            inputs = self.tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
             with torch.no_grad():
-                outputs = self.embedding_model(**inputs)
+                # Use autocast for memory efficiency
+                with torch.autocast(device_type='cpu', dtype=torch.float16):
+                    outputs = self.embedding_model(**inputs)
             # Mean pooling
             attention_mask = inputs['attention_mask']
             token_embeddings = outputs.last_hidden_state
@@ -48,9 +72,10 @@ class WisdomOracle:
             sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
             sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
             mean_pooled = sum_embeddings / sum_mask
-            return mean_pooled[0].cpu().numpy().tolist()
+            # Convert to float32 for consistency with existing embeddings
+            return mean_pooled[0].float().cpu().numpy().tolist()
         except Exception as e:
-            logger.error(f"Failed to generate embedding: {e}")
+            logger.error(f"Failed to generate local BERT embeddings: {e}")
             return []
 
     def _vector_search(self, embedding: List[float], limit: int = 3) -> List[Dict]:

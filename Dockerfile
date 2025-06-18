@@ -60,14 +60,16 @@
     HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
         CMD curl -f http://localhost:8080/api/health || exit 1
     
-    # Run the application using gunicorn
+    # Run the application using gunicorn with memory-optimized settings
     CMD exec gunicorn \
         --bind 0.0.0.0:$PORT \
         --workers 1 \
-        --threads 8 \
-        --timeout 300 \
-        --preload \
-        --max-requests 1000 \
-        --max-requests-jitter 100 \
+        --threads 2 \
+        --timeout 600 \
+        --worker-class gthread \
+        --max-requests 100 \
+        --max-requests-jitter 10 \
+        --worker-tmp-dir /dev/shm \
+        --worker-connections 1000 \
         app:app
     
