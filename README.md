@@ -1,6 +1,6 @@
 # Aethos & Aletheia: A Dual Framework for Trustworthy AI
 
-![Aethos & Aletheia Banner](https://raw.githubusercontent.com/Aethos-and-Aletheia/Aethos-and-Aletheia/main/AETHOS-ALETHEIA-Banner.png)
+![Aethos & Aletheia Banner](https://github.com/ai-wes/aethos-and-aletheia-deploy/blob/main/assets/title-image-aethos-aletheia.png?raw=true)
 
 Aethos & Aletheia is a groundbreaking dual-system framework that combines the wisdom of human philosophical traditions with a dynamic, self-correcting AI learning loop. It is designed to help researchers, developers, and policymakers create and evaluate verifiably aligned AI systems.
 

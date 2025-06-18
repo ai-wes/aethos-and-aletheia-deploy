@@ -1,0 +1,48 @@
+# Core Flask dependencies
+Flask
+Flask-CORS
+
+# MongoDB dependencies
+pymongo
+pymongo[srv]
+
+# Google Cloud dependencies
+google-cloud-aiplatform
+google-cloud-storage
+vertexai
+google-genai
+# Additional utility dependencies
+numpy
+python-dotenv
+gunicorn
+requests
+
+# Development dependencies (optional)
+pytest
+pytest-flask
+black
+flake8
+
+# Security and monitoring
+flask-limiter
+prometheus-flask-exporter
+
+# requirements.txt
+flask
+flask-cors
+pymongo
+python-dotenv
+google-generativeai
+google-auth
+numpy
+torch
+transformers
+requests
+datasets
+google-cloud-pubsub
+
+# Additional Google Cloud dependencies for Scenario Exporter
+google-cloud-storage
+google-cloud-aiplatform
+google-cloud-logging
+
