@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: bert-api-service
+    env: python
+    buildCommand: pip install -r bert-requirements.txt
+    startCommand: python bert_api.py
+    plan: starter
+    envVars:
+      - key: PORT
+        value: 5001
+      - key: PYTHON_VERSION
+        value: 3.12.0
